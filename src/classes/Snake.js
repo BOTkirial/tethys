@@ -1,3 +1,4 @@
+import * as THREE from "three";
 import Model from "./Model.js";
 import Portal from "./PortalRound.js";
 

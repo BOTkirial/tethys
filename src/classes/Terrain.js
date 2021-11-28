@@ -1,6 +1,10 @@
-import { GLTFLoader } from "../../lib/GLTFLoader.js";
-import { InstancedUniformsMesh } from "../../lib/three-instanced-uniforms-mesh/src/InstancedUniformsMesh.js";
 import Model from "./Model.js";
+import { openSimplexNoise } from "../lib/simplexNoise";
+import { makeRectangle } from "../lib/fractal-noise.js";
+import { map, mapToUnitCircle, showNoise } from "../lib/utils.js";
+import * as THREE from "three";
+import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
+import { InstancedUniformsMesh } from "three-instanced-uniforms-mesh";
 
 // le vertex shader basique pour le terrain
 // il ne sert que pour générer les UV
@@ -106,10 +110,10 @@ class Terrain {
             }
         }
 
-        showNoise(this.heightMap, "debug1")
-        showNoise(heightMap1, "debug2")
-        showNoise(heightMap2, "debug3")
-        showNoise(heightMap3, "debug4")
+        showNoise(this.heightMap);
+        showNoise(heightMap1);
+        showNoise(heightMap2);
+        showNoise(heightMap3);
 
 
     }
@@ -351,30 +355,30 @@ class Terrain {
     }
 
     init(scene) {
-         // génère le terrain et applique une height à chaque point basé sur sa position dans la heightMap
-         const geometry = new THREE.PlaneBufferGeometry(this.size, this.size, this.nbSegments - 1, this.nbSegments - 1)
-         let index = 0;
-         // traverse les points de la géométrie du terrain 3 par 3 car x, y et z sont stockés dans le meme tableau à la suite
-         for (let cpt = 0; cpt < geometry.attributes.position.array.length; cpt += 3) {
-             // convertit l'index 1d en position x/y pour chercher dans un tableau 2d
-             const y = Math.floor(index / this.nbSegments);
-             const x = index % this.nbSegments;
-             // attribue la hauteur du point de la geometrie en fonction de sa position sur la heightMap
-             let z = this.heightMap[x * this.heightMapPrecision][y * this.heightMapPrecision];
-             geometry.attributes.position.array[cpt + 2] = z;
- 
-             // map les points du carré dans un cercle
-             if (this.isRound) {
-                 let newPosX = map(geometry.attributes.position.array[cpt], - this.size / 2, this.size / 2, -1, 1);
-                 let newPosY = map(geometry.attributes.position.array[cpt + 1], - this.size / 2, this.size / 2, -1, 1);
-                 let newPos = mapToUnitCircle(newPosX, newPosY);
- 
-                 geometry.attributes.position.array[cpt + 0] = newPos[0] * this.size / 2;
-                 geometry.attributes.position.array[cpt + 1] = newPos[1] * this.size / 2;
-             }
- 
-             index++;
-         }
+        // génère le terrain et applique une height à chaque point basé sur sa position dans la heightMap
+        const geometry = new THREE.PlaneBufferGeometry(this.size, this.size, this.nbSegments - 1, this.nbSegments - 1)
+        let index = 0;
+        // traverse les points de la géométrie du terrain 3 par 3 car x, y et z sont stockés dans le meme tableau à la suite
+        for (let cpt = 0; cpt < geometry.attributes.position.array.length; cpt += 3) {
+            // convertit l'index 1d en position x/y pour chercher dans un tableau 2d
+            const y = Math.floor(index / this.nbSegments);
+            const x = index % this.nbSegments;
+            // attribue la hauteur du point de la geometrie en fonction de sa position sur la heightMap
+            let z = this.heightMap[x * this.heightMapPrecision][y * this.heightMapPrecision];
+            geometry.attributes.position.array[cpt + 2] = z;
+
+            // map les points du carré dans un cercle
+            if (this.isRound) {
+                let newPosX = map(geometry.attributes.position.array[cpt], - this.size / 2, this.size / 2, -1, 1);
+                let newPosY = map(geometry.attributes.position.array[cpt + 1], - this.size / 2, this.size / 2, -1, 1);
+                let newPos = mapToUnitCircle(newPosX, newPosY);
+
+                geometry.attributes.position.array[cpt + 0] = newPos[0] * this.size / 2;
+                geometry.attributes.position.array[cpt + 1] = newPos[1] * this.size / 2;
+            }
+
+            index++;
+        }
         // charge les texture d'herbe et de terre et dit qu'elles peuvent se répéter
         let textureGrass = new THREE.TextureLoader().load('./src/textures/grass.jpg');
         textureGrass.wrapS = textureGrass.wrapT = THREE.RepeatWrapping;

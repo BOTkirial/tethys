@@ -1,3 +1,5 @@
+import * as THREE from "three";
+
 class CameraController {
 
     constructor(position = new THREE.Vector3(0, 0, 0), rotation = new THREE.Vector3(0, 0, 0)) {

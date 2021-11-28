@@ -1,17 +1,32 @@
+import * as THREE from "three";
+
 class Renderer extends THREE.WebGLRenderer {
 
-    constructor(params) {
-        super(params);
+    constructor() {
+        // créé la canvas pour dessiner
+        const canvas = document.createElement("canvas");
+        canvas.setAttribute("id", "canvas");
+        document.body.appendChild(canvas);
+        // envoie la canvas a la class héritée
+        super({ canvas: canvas });
+        // parametrage des couleurs
         this.toneMapping = THREE.LinearToneMapping;
         this.outputEncoding = THREE.sRGBEncoding;
+        // résolution et taille de la canvas
         this.setPixelRatio(window.devicePixelRatio);
         this.setSize(window.innerWidth, window.innerHeight);
 
-        // display debug infos
-        this.geometriesCount = document.querySelector("#text1");
-        this.drawCallsCount = document.querySelector("#text2");
-        this.verticesCount = document.querySelector("#text3");
-
+        // créé les elements html pour afficher les infos de debug
+        this.geometriesCountReference = document.createElement("p");
+        this.drawCallsCountReference = document.createElement("p");
+        this.verticesCountReference = document.createElement("p");
+        this.geometriesCountReference.setAttribute("class", "debugInfo");
+        this.drawCallsCountReference.setAttribute("class", "debugInfo");
+        this.verticesCountReference.setAttribute("class", "debugInfo");
+        // ajoute les elements au document
+        document.body.appendChild(this.geometriesCountReference);
+        document.body.appendChild(this.drawCallsCountReference);
+        document.body.appendChild(this.verticesCountReference);
         // compte les frames
         this.frame = 0n;
     }
@@ -20,9 +35,9 @@ class Renderer extends THREE.WebGLRenderer {
         this.frame += 1n;
 
         if(this.frame % 10n === 0n) {
-            this.geometriesCount.innerHTML = this.info.memory.geometries;
-            this.drawCallsCount.innerHTML = this.info.render.calls;
-            this.verticesCount.innerHTML = this.info.render.triangles;
+            this.geometriesCountReference.innerHTML = this.info.memory.geometries;
+            this.drawCallsCountReference.innerHTML = this.info.render.calls;
+            this.verticesCountReference.innerHTML = this.info.render.triangles;
         }
 
         this.setRenderTarget(target);

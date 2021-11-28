@@ -1,3 +1,6 @@
+import * as THREE from "three";
+import { map, mapToUnitCircle } from "../lib/utils";
+
 const vertexShader =
     `
 uniform float u_time;

@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import * as CANNON from "cannon-es";
-import CannonDebugRenderer from '../../lib/cannonDebugRenderer'
-import CannonUtils from "../../lib/cannonUtils";
+import CannonDebugRenderer from '../lib/cannonDebugRenderer'
+import CannonUtils from "../lib/cannonUtils";
 
 
 class Scene extends THREE.Scene {

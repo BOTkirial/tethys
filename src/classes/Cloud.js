@@ -1,3 +1,5 @@
+import * as THREE from "three";
+
 // la géometrie et le material pour toutes les spheres
 const sphereGeometry = new THREE.SphereGeometry(6, 16, 32);
 const sphereMaterial = new THREE.MeshBasicMaterial({ color: 0xFFFFFF, fog: false });
