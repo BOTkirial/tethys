@@ -1,0 +1,16 @@
+{
+  "name": "tethys",
+  "version": "0.0.0",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "serve": "vite preview"
+  },
+  "devDependencies": {
+    "vite": "^2.6.4"
+  },
+  "dependencies": {
+    "cannon-es": "^0.18.0",
+    "three": "^0.135.0"
+  }
+}

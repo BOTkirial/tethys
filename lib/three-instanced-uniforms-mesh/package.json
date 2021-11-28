@@ -1,0 +1,56 @@
+{
+  "_from": "three-instanced-uniforms-mesh",
+  "_id": "three-instanced-uniforms-mesh@0.43.0",
+  "_inBundle": false,
+  "_integrity": "sha512-2xxpqotOmKUfldjITwBPJgPHFGlXOWLKLmjAL8Qa9HzAcjri//AQA0c1qTBVCXqFO8gX2oWXRbqe0XyUMpaC2g==",
+  "_location": "/three-instanced-uniforms-mesh",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "tag",
+    "registry": true,
+    "raw": "three-instanced-uniforms-mesh",
+    "name": "three-instanced-uniforms-mesh",
+    "escapedName": "three-instanced-uniforms-mesh",
+    "rawSpec": "",
+    "saveSpec": null,
+    "fetchSpec": "latest"
+  },
+  "_requiredBy": [
+    "#USER",
+    "/"
+  ],
+  "_resolved": "https://registry.npmjs.org/three-instanced-uniforms-mesh/-/three-instanced-uniforms-mesh-0.43.0.tgz",
+  "_shasum": "53a6655e1d985fe7cf034ba83de661a09a0720cf",
+  "_spec": "three-instanced-uniforms-mesh",
+  "_where": "C:\\Users\\cedri\\Desktop\\Nouveau dossier",
+  "author": {
+    "name": "Jason Johnston",
+    "email": "jason.johnston@protectwise.com"
+  },
+  "bugs": {
+    "url": "https://github.com/protectwise/troika/issues"
+  },
+  "bundleDependencies": false,
+  "dependencies": {
+    "troika-three-utils": "^0.43.0"
+  },
+  "deprecated": false,
+  "description": "Extension to Three.js InstancedMesh supporting per-instance uniform values",
+  "gitHead": "497fa534d015bc8f746c7d00ec7bfde1df92f491",
+  "homepage": "https://github.com/protectwise/troika#readme",
+  "license": "MIT",
+  "main": "dist/three-instanced-uniforms-mesh.umd.js",
+  "module": "dist/three-instanced-uniforms-mesh.esm.js",
+  "module:src": "src/index.js",
+  "name": "three-instanced-uniforms-mesh",
+  "peerDependencies": {
+    "three": ">=0.103.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/protectwise/troika.git",
+    "directory": "packages/three-instanced-uniforms-mesh"
+  },
+  "sideEffects": false,
+  "version": "0.43.0"
+}
