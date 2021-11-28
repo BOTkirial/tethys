@@ -128,7 +128,7 @@ class Scene extends THREE.Scene {
         if (delta > 0.1) delta = 0.1;
         // simule le temps passé
         this.world.step(delta);
-        // this.cannonDebugRenderer.update()
+        this.cannonDebugRenderer.update()
 
         // pour chaque body physique dans le monde
         this.world.bodies.forEach((body) => {

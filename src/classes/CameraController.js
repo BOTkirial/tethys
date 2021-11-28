@@ -13,10 +13,6 @@ class CameraController {
         this.speed = 10;
         // définit le cone de vision pour faire du culling en plus du culling automatique
         this.viewFrustum = new THREE.Frustum().setFromProjectionMatrix(this.camera.projectionMatrix);
-    }
-
-    init(scene) {
-        this.setScene(scene);
 
         // verrouille le curseur
         window.addEventListener("click", function () {
@@ -81,6 +77,10 @@ class CameraController {
             }
 
         });
+    }
+
+    init(scene) {
+        this.setScene(scene);
     }
 
     // la scene que la caméra envoie au renderer

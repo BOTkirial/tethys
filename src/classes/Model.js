@@ -29,6 +29,14 @@ class Model {
         );
     }
 
+    setPosition(position) {
+        if (this.model !== undefined) {
+            this.model.position.copy(position);
+        } else {
+            console.log("model pas encore chargé");
+        }
+    }
+
 }
 
 export default Model;
