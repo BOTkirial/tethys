@@ -11,6 +11,8 @@
   },
   "dependencies": {
     "cannon-es": "^0.18.0",
+    "fractal-noise": "^1.2.0",
+    "open-simplex-noise": "^2.5.0",
     "three": "^0.135.0",
     "three-instanced-uniforms-mesh": "^0.44.0"
   }

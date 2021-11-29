@@ -1,10 +1,10 @@
 import Model from "./Model.js";
-import { openSimplexNoise } from "../lib/simplexNoise";
-import { makeRectangle } from "../lib/fractal-noise.js";
 import { map, mapToUnitCircle, showNoise } from "../lib/utils.js";
 import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 import { InstancedUniformsMesh } from "three-instanced-uniforms-mesh";
+import { makeNoise2D } from "open-simplex-noise";
+import { makeRectangle } from "fractal-noise";
 
 // le vertex shader basique pour le terrain
 // il ne sert que pour générer les UV
@@ -72,14 +72,14 @@ class Terrain {
         this.isRound = isRound;
 
         // un générateur de bruit
-        const noise = new openSimplexNoise(12); // de -1 à 1
-        const noise2 = new openSimplexNoise("ouais une super seed");
-        const noise3 = new openSimplexNoise("nan ca c'est une meilleure seed");
+        const noise = new makeNoise2D(12); // de -1 à 1
+        const noise2 = new makeNoise2D("ouais une super seed");
+        const noise3 = new makeNoise2D("nan ca c'est une meilleure seed");
         // créé plusiuers heightmap avec des fréquences différentes
-        this.heightMap = makeRectangle(this.nbSegments * this.heightMapPrecision, this.nbSegments * this.heightMapPrecision, noise.noise2D); // heightMap de destination
-        const heightMap1 = makeRectangle(this.nbSegments * this.heightMapPrecision, this.nbSegments * this.heightMapPrecision, noise.noise2D, { frequency: 0.1, amplitude: 2 });
-        const heightMap2 = makeRectangle(this.nbSegments * this.heightMapPrecision, this.nbSegments * this.heightMapPrecision, noise2.noise2D, { frequency: 0.3, amplitude: 1 });
-        const heightMap3 = makeRectangle(this.nbSegments * this.heightMapPrecision, this.nbSegments * this.heightMapPrecision, noise3.noise2D, { frequency: 0.6, amplitude: 2 });
+        this.heightMap = makeRectangle(this.nbSegments * this.heightMapPrecision, this.nbSegments * this.heightMapPrecision, noise); // heightMap de destination
+        const heightMap1 = makeRectangle(this.nbSegments * this.heightMapPrecision, this.nbSegments * this.heightMapPrecision, noise, { frequency: 0.1, amplitude: 2 });
+        const heightMap2 = makeRectangle(this.nbSegments * this.heightMapPrecision, this.nbSegments * this.heightMapPrecision, noise2, { frequency: 0.3, amplitude: 1 });
+        const heightMap3 = makeRectangle(this.nbSegments * this.heightMapPrecision, this.nbSegments * this.heightMapPrecision, noise3, { frequency: 0.6, amplitude: 2 });
 
         // ajoute les différentes heightmap
         // stocke le maximum et le minimum de la somme des heightmap pour faire un map() plus tard
