@@ -15,6 +15,7 @@ import Model from "./src/classes/Model.js";
 const renderer = new Renderer();
 
 const scene = new Scene(new THREE.Color(0xDDE0E3), 0, 400);
+scene.enablePhysics();
 scene.setSky(renderer, "src/textures/ciel.png");
 scene.setLight();
 scene.setFog();
@@ -27,7 +28,7 @@ cameraController.init(scene);
 
 // ==========LOGIQUE==========
 
-const water = new Water(1024, 1024, new THREE.Vector3(0, 5.5, 0), true);
+const water = new Water(1024, 1024, new THREE.Vector3(0, 7.5, 0), true);
 water.init(scene);
 
 const water2 = new Water(1024, 1024, new THREE.Vector3(0, 5.5, 0), true);
@@ -52,7 +53,7 @@ portal.init(sceneSnake);
 portal.setAssociatedPortal(snake.portal);
 snake.portal.setAssociatedPortal(portal);
 
-const terrain = new Terrain(true, 8, 2);
+const terrain = new Terrain(true, 8);
 terrain.init(scene);
 terrain.spawnGrass(scene);
 terrain.spawnTrees(scene);
@@ -60,7 +61,6 @@ terrain.spawnTrees(scene);
 const house = new Model("src/models/maison.glb", 100);
 house.position.set(100, 40, 140);
 house.rotation.set(0, 2 * Math.PI, 0);
-console.log(house)
 house.init(scene);
 
 function gameloop() {
@@ -71,6 +71,7 @@ function gameloop() {
     terrain.updateGrass(scene, cameraController);
     snake.update(renderer, cameraController);
     portal.update(renderer, cameraController);
+    scene.updatePhysics();
 
     renderer.update(cameraController.scene, cameraController.camera);
 
