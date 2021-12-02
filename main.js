@@ -28,7 +28,7 @@ cameraController.init(scene);
 
 // ==========LOGIQUE==========
 
-const water = new Water(1024, 1024, new THREE.Vector3(0, 7.5, 0), true);
+const water = new Water(1024, 1024, new THREE.Vector3(0, 8, 0), true);
 water.init(scene);
 
 const water2 = new Water(1024, 1024, new THREE.Vector3(0, 5.5, 0), true);
@@ -53,7 +53,7 @@ portal.init(sceneSnake);
 portal.setAssociatedPortal(snake.portal);
 snake.portal.setAssociatedPortal(portal);
 
-const terrain = new Terrain(true, 8);
+const terrain = new Terrain(true, 16);
 terrain.init(scene);
 terrain.spawnGrass(scene);
 terrain.spawnTrees(scene);
@@ -62,6 +62,12 @@ const house = new Model("src/models/maison.glb", 100);
 house.position.set(100, 40, 140);
 house.rotation.set(0, 2 * Math.PI, 0);
 house.init(scene);
+
+// const sphereGeometry = new THREE.SphereBufferGeometry(10);
+// const sphereMaterial = new THREE.MeshBasicMaterial({ color: 0xFF0000 });
+// const sphereMesh = new THREE.Mesh(sphereGeometry, sphereMaterial);
+// sphereMesh.position.set(0, 20, 0);
+// scene.addMeshWithSpherePhysics(sphereMesh);
 
 function gameloop() {
 
