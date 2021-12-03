@@ -53,7 +53,7 @@ portal.init(sceneSnake);
 portal.setAssociatedPortal(snake.portal);
 snake.portal.setAssociatedPortal(portal);
 
-const terrain = new Terrain(true, 16);
+const terrain = new Terrain(true, 8);
 terrain.init(scene);
 terrain.spawnGrass(scene);
 terrain.spawnTrees(scene);

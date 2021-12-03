@@ -14,6 +14,7 @@ class Scene extends THREE.Scene {
         this.fogFar = fogFar;
         // pour la durée d'une step de simulation physique
         this.clock = new THREE.Clock();
+
     }
 
     enablePhysics() {
@@ -23,6 +24,18 @@ class Scene extends THREE.Scene {
         this.world.allowSleep = true;
         this.world.solver.iterations = 10;
         this.cannonDebugRenderer = new CannonDebugRenderer(this, this.world)
+
+
+
+        const heightFieldShape = new CANNON.Heightfield([[0, 8, 0], [0, 0, 0], [0, 0, 0]], { elementSize: 8 });
+        const heightFieldBody = new CANNON.Body({ shape: heightFieldShape })
+        heightFieldBody.position.set(0, 100, 0);
+        const planeMesh = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), new THREE.MeshBasicMaterial({ color: 0xFFFFFF }))
+        planeMesh.rotateX(-Math.PI / 2)
+        heightFieldBody.quaternion.copy(planeMesh.quaternion);
+        console.log(heightFieldBody)
+        this.world.addBody(heightFieldBody);
+
     }
 
     setSky(renderer, url) {
@@ -132,6 +145,9 @@ class Scene extends THREE.Scene {
 
         // pour chaque body physique dans le monde
         this.world.bodies.forEach((body) => {
+            // il faut qu'un mesh existe pour le body
+            if (body.mesh === undefined)
+                return
             // met la position de la partie visuelle à jour avec la position de la partie physique
             body.mesh.position.set(body.position.x, body.position.y, body.position.z);
             // met la rotation de la partie visuelle à jour avec la rotation de la partie physique

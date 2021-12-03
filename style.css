@@ -23,4 +23,5 @@ p {
 canvas:not(#canvas){
     float: left;
     transform: scale(0.3);
+    transform-origin: 0% 0%;
 }

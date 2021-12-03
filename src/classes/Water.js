@@ -112,7 +112,7 @@ class Water extends THREE.Mesh {
             transparent: true
         });
 
-        this.geometry = new THREE.PlaneGeometry(this.width, this.depth, this.width / 16, this.depth / 16);
+        this.geometry = new THREE.PlaneGeometry(this.width, this.depth, this.width / 8, this.depth / 8);
 
         if (this.isRound) {
             // parcourt chaque point de l'eau pour la mettre en rond

@@ -1,7 +1,6 @@
 import Model from "./Model.js";
 import { map, mapToUnitCircle, showNoise } from "../lib/utils.js";
 import * as THREE from "three";
-import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 import { InstancedUniformsMesh } from "three-instanced-uniforms-mesh";
 import { makeNoise2D } from "open-simplex-noise";
 import { makeRectangle } from "fractal-noise";
@@ -35,7 +34,7 @@ uniform float fogNear;
 uniform float fogFar;
 
 void main() {
-    if(pos.y > 6.5) {
+    if(pos.y > 7.5) {
         if(pos.y > 8.5) {
             vec4 color = texture(textureGrass, vec2(vUv.x * textureRepeatX, vUv.y * textureRepeatY));
             color.rgb += 0.1;
@@ -78,7 +77,7 @@ class Terrain {
         this.heightMap = makeRectangle(this.size, this.size, noise); // heightMap de destination
         const heightMap1 = makeRectangle(this.size, this.size, noise, { frequency: 0.01, amplitude: 2 });
         const heightMap2 = makeRectangle(this.size, this.size, noise2, { frequency: 0.03, amplitude: 1 });
-        const heightMap3 = makeRectangle(this.size, this.size, noise3, { frequency: 0.06, amplitude: 2 });
+        const heightMap3 = makeRectangle(this.size, this.size, noise3, { frequency: 0.06, amplitude: 1 });
 
         // ajoute les différentes heightmap
         // stocke le maximum et le minimum de la somme des heightmap pour faire un map() plus tard
@@ -122,7 +121,7 @@ class Terrain {
         var vertices = new Float32Array([
             0, 0, 0,
             0.1, 0, 0,
-            0.05, 0.4, 0
+            0, 0.8, 0
         ]);
         grassGeometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
 
@@ -216,7 +215,7 @@ class Terrain {
         // stocke les points où on vas faire spawn une herbe ou une fleure
         const grassPoints = [];
         const flowerPoints = [];
-        const grassHeightLimit = 8;
+        const grassHeightLimit = 7;
         const grassDensity = 1
         const flowerDensity = 0.002
         // parcourt la heightMap à la recherche de point suffisement haute
