@@ -29,6 +29,7 @@ function showNoise(heightMap) {
     for (let i = 0; i < canvas.width - 1; i++) {
         for (let j = 0; j < canvas.height - 1; j++) {
             let a = heightMap[i][j];
+            // c.fillStyle = "rgba(255, 255, 255, " + a + ")";
             c.fillStyle = "rgba(255, 255, 255, " + map(a, 0, 10, 0, 1) + ")";
             c.fillRect(i, j, 1, 1);
         }
@@ -42,4 +43,4 @@ function mapToUnitCircle(x, y) {
     ]
 }
 
-export {map, mapToUnitCircle, showNoise}
+export { map, mapToUnitCircle, showNoise }

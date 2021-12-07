@@ -14,7 +14,7 @@ import Model from "./src/classes/Model.js";
 
 const renderer = new Renderer();
 
-const scene = new Scene(new THREE.Color(0xDDE0E3), 0, 400);
+const scene = new Scene(new THREE.Color(0xDDE0E3), 0, 2000);
 scene.enablePhysics();
 scene.setSky(renderer, "src/textures/ciel.png");
 scene.setLight();
@@ -28,7 +28,7 @@ cameraController.init(scene);
 
 // ==========LOGIQUE==========
 
-const water = new Water(1024, 1024, new THREE.Vector3(0, 8, 0), true);
+const water = new Water(1024, 1024, new THREE.Vector3(0, 7, 0), false);
 water.init(scene);
 
 const water2 = new Water(1024, 1024, new THREE.Vector3(0, 5.5, 0), true);
@@ -53,7 +53,7 @@ portal.init(sceneSnake);
 portal.setAssociatedPortal(snake.portal);
 snake.portal.setAssociatedPortal(portal);
 
-const terrain = new Terrain(true, 8);
+const terrain = new Terrain(false, 8);
 terrain.init(scene);
 terrain.spawnGrass(scene);
 terrain.spawnTrees(scene);
@@ -64,11 +64,23 @@ house.position.set(100, 40, 140);
 house.rotation.set(0, 2 * Math.PI, 0);
 house.init(scene);
 
-// const sphereGeometry = new THREE.SphereBufferGeometry(10);
-// const sphereMaterial = new THREE.MeshBasicMaterial({ color: 0xFF0000 });
-// const sphereMesh = new THREE.Mesh(sphereGeometry, sphereMaterial);
-// sphereMesh.position.set(0, 20, 0);
-// scene.addMeshWithSpherePhysics(sphereMesh);
+const sphereGeometry = new THREE.SphereBufferGeometry(2);
+const sphereMaterial = new THREE.MeshBasicMaterial({ color: 0xFF0000 });
+const sphereMesh = new THREE.Mesh(sphereGeometry, sphereMaterial);
+sphereMesh.position.set(0, 200, 0);
+scene.addMeshWithBoxPhysics(sphereMesh);
+
+const sphereMesh2 = new THREE.Mesh(sphereGeometry, sphereMaterial);
+sphereMesh2.position.set(0, 300, 0);
+scene.addMeshWithBoxPhysics(sphereMesh2);
+
+const sphereMesh3 = new THREE.Mesh(sphereGeometry, sphereMaterial);
+sphereMesh3.position.set(0, 400, 0);
+scene.addMeshWithBoxPhysics(sphereMesh3);
+
+const sphereMesh4 = new THREE.Mesh(sphereGeometry, sphereMaterial);
+sphereMesh4.position.set(0, 500, 0);
+scene.addMeshWithBoxPhysics(sphereMesh4);
 
 function gameloop() {
 
