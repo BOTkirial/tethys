@@ -57,6 +57,7 @@ const terrain = new Terrain(true, 8);
 terrain.init(scene);
 terrain.spawnGrass(scene);
 terrain.spawnTrees(scene);
+terrain.initPhysics(scene.getWorld())
 
 const house = new Model("src/models/maison.glb", 100);
 house.position.set(100, 40, 140);

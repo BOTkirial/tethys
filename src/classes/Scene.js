@@ -14,7 +14,6 @@ class Scene extends THREE.Scene {
         this.fogFar = fogFar;
         // pour la durée d'une step de simulation physique
         this.clock = new THREE.Clock();
-
     }
 
     enablePhysics() {
@@ -23,19 +22,7 @@ class Scene extends THREE.Scene {
         this.world.broadphase = new CANNON.NaiveBroadphase();
         this.world.allowSleep = true;
         this.world.solver.iterations = 10;
-        this.cannonDebugRenderer = new CannonDebugRenderer(this, this.world)
-
-
-
-        const heightFieldShape = new CANNON.Heightfield([[0, 8, 0], [0, 0, 0], [0, 0, 0]], { elementSize: 8 });
-        const heightFieldBody = new CANNON.Body({ shape: heightFieldShape })
-        heightFieldBody.position.set(0, 100, 0);
-        const planeMesh = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), new THREE.MeshBasicMaterial({ color: 0xFFFFFF }))
-        planeMesh.rotateX(-Math.PI / 2)
-        heightFieldBody.quaternion.copy(planeMesh.quaternion);
-        console.log(heightFieldBody)
-        this.world.addBody(heightFieldBody);
-
+        this.cannonDebugRenderer = new CannonDebugRenderer(this, this.world);
     }
 
     setSky(renderer, url) {

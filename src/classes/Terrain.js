@@ -4,6 +4,7 @@ import * as THREE from "three";
 import { InstancedUniformsMesh } from "three-instanced-uniforms-mesh";
 import { makeNoise2D } from "open-simplex-noise";
 import { makeRectangle } from "fractal-noise";
+import * as CANNON from "cannon-es";
 
 // le vertex shader basique pour le terrain
 // il ne sert que pour générer les UV
@@ -75,9 +76,9 @@ class Terrain {
         const noise3 = new makeNoise2D("nan ca c'est une meilleure seed");
         // créé plusiuers heightmap avec des fréquences différentes
         this.heightMap = makeRectangle(this.size, this.size, noise); // heightMap de destination
-        const heightMap1 = makeRectangle(this.size, this.size, noise, { frequency: 0.01, amplitude: 2 });
-        const heightMap2 = makeRectangle(this.size, this.size, noise2, { frequency: 0.03, amplitude: 1 });
-        const heightMap3 = makeRectangle(this.size, this.size, noise3, { frequency: 0.06, amplitude: 1 });
+        const heightMap1 = makeRectangle(this.size, this.size, noise, { frequency: 0.005, amplitude: 1 });
+        const heightMap2 = makeRectangle(this.size, this.size, noise2, { frequency: 0.01, amplitude: 50 });
+        const heightMap3 = makeRectangle(this.size, this.size, noise3, { frequency: 0.006, amplitude: 50 });
 
         // ajoute les différentes heightmap
         // stocke le maximum et le minimum de la somme des heightmap pour faire un map() plus tard
@@ -96,7 +97,7 @@ class Terrain {
         }
         // console.log(min, max)
 
-        // créee la heightMap finale
+        // crée la heightMap finale
         let heightScale = 14;
         for (let i = 0; i < this.heightMap.length; i++) {
             for (let j = 0; j < this.heightMap.length; j++) {
@@ -105,6 +106,12 @@ class Terrain {
                 this.heightMap[i][j] = h;
             }
         }
+
+        // prépare le tableau pour stocker les données de la heightMap pour la collisionShape
+        this.collisionHeightMap = Array(128).fill(0).map(val => Array(128).fill(0));
+
+        // parcourt la heightMap finale avec une résolution plus basse pour remplir la collisionHeightMap
+        // TODO
 
         // showNoise(this.heightMap);
         // showNoise(heightMap1);
@@ -121,7 +128,7 @@ class Terrain {
         var vertices = new Float32Array([
             0, 0, 0,
             0.1, 0, 0,
-            0, 0.8, 0
+            0, 0.65, 0
         ]);
         grassGeometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
 
@@ -349,9 +356,9 @@ class Terrain {
         // traverse les points de la géométrie du terrain 3 par 3 car x, y et z sont stockés dans le meme tableau à la suite
         for (let cpt = 0; cpt < geometry.attributes.position.array.length; cpt += 3) {
 
-            const y = Math.floor(map(geometry.attributes.position.array[cpt + 2], -this.size / 2, this.size / 2, 0, this.size - 1));
-            const x = Math.floor(map(geometry.attributes.position.array[cpt + 0], -this.size / 2, this.size / 2, 0, this.size - 1));
             // attribue la hauteur du point de la geometrie en fonction de sa position sur la heightMap
+            const x = Math.floor(map(geometry.attributes.position.array[cpt + 0], -this.size / 2, this.size / 2, 0, this.size - 1));
+            const y = Math.floor(map(geometry.attributes.position.array[cpt + 2], -this.size / 2, this.size / 2, 0, this.size - 1));
             let height = this.heightMap[x][y];
 
             // ne s'occupe que des points du haut de la box
@@ -407,6 +414,18 @@ class Terrain {
         const donutMesh = new THREE.Mesh(donutGeometry, donutMaterial);
         donutMesh.rotateX(Math.PI / 2)
         scene.add(donutMesh);
+    }
+
+    initPhysics(world) {
+
+        // const heightFieldShape = new CANNON.Heightfield(tabHeights, { elementSize: 1 });
+        // const heightFieldBody = new CANNON.Body({ shape: heightFieldShape })
+        // heightFieldBody.position.set(0, 100, 0);
+        // const planeMesh = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), new THREE.MeshBasicMaterial({ color: 0xFFFFFF }))
+        // planeMesh.rotateX(-Math.PI / 2)
+        // heightFieldBody.quaternion.copy(planeMesh.quaternion);
+        // console.log(heightFieldBody)
+        // world.addBody(heightFieldBody);
     }
 
     updateGrass(scene, cameraController) {
