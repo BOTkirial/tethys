@@ -11,8 +11,6 @@ class CameraController {
         this.camera.layers.enableAll();
         this.direction = new THREE.Vector3(0, 0, 0);
         this.speed = 10;
-        // définit le cone de vision pour faire du culling en plus du culling automatique
-        this.viewFrustum = new THREE.Frustum().setFromProjectionMatrix(this.camera.projectionMatrix);
 
         // verrouille le curseur
         window.addEventListener("click", function () {

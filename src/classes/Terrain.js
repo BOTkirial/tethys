@@ -98,7 +98,7 @@ class Terrain {
         // console.log(min, max)
 
         // crée la heightMap finale
-        let heightScale = 14;
+        let heightScale = 18;
         for (let i = 0; i < this.heightMap.length; i++) {
             for (let j = 0; j < this.heightMap.length; j++) {
                 // normalise la hauteur entre 0 et 1 puis multiplie par une scale
@@ -228,7 +228,7 @@ class Terrain {
         const flowerPoints = [];
         const grassHeightLimit = 8.4;
         const grassDensity = 1
-        const flowerDensity = 0.002
+        const flowerDensity = 0.001
         // parcourt la heightMap à la recherche de point suffisement hauts
         for (let i = 0; i < this.heightMap.length; i++) {
             for (let j = 0; j < this.heightMap.length; j++) {
@@ -236,72 +236,28 @@ class Terrain {
                 let height = this.heightMap[i][j]
                 // si il est suffisement haut
                 if (height > grassHeightLimit) {
-                    let newPosX = map(j, 0, this.heightMap.length, -this.size / 2, this.size / 2);
-                    let newPosY = map(i, 0, this.heightMap.length, -this.size / 2, this.size / 2);
-                    let newPos = mapToUnitCircle(newPosX, newPosY);
+                    let finalPos = [map(j, 0, this.heightMap.length, -1, 1), map(i, 0, this.heightMap.length, -1, 1)];
+                    if (this.isRound) { finalPos = mapToUnitCircle(finalPos[0], finalPos[1]); }
                     // gere la densité de l'herbe
                     if (Math.random() < grassDensity) {
                         // créé aléatoirement une herbe ou une fleur
                         if (Math.random() > flowerDensity) {
-                            grassPoints.push(new THREE.Vector3(newPosX, height, newPosY))
+                            grassPoints.push(new THREE.Vector3(finalPos[0] * this.size / 2, height, finalPos[1] * this.size / 2))
                         } else {
-                            flowerPoints.push(new THREE.Vector3(newPosX, height, newPosY))
+                            flowerPoints.push(new THREE.Vector3(finalPos[0] * this.size / 2, height, finalPos[1] * this.size / 2))
                         }
                     }
                 }
             }
         }
-        console.log(grassPoints)
 
-        // créé des chunks pour la répartition de l'herbe
-        const nbChunks = 64; // doit etre un nombre avec une racine carré entiere
-        const nbLines = Math.sqrt(nbChunks);
-        const chunkSize = (this.size) / nbLines;
-        const chunks = [];
-        // parcourt les chunks
-        for (let x = 0; x < nbLines; x++) {
-            for (let z = 0; z < nbLines; z++) {
-                // récupère les points qui sont compris dans ce chunk
-                let chunk = grassPoints.filter((point) => {
-                    const correctX = point.x > (-this.size / 2) + x * chunkSize && point.x <= (-this.size / 2) + (x + 1) * chunkSize;
-                    const correctZ = point.z > (-this.size / 2) + z * chunkSize && point.z <= (-this.size / 2) + (z + 1) * chunkSize;
-                    return correctX && correctZ;
-                })
-                chunks.push(chunk)
-            }
+        const instancedGrassMesh = new InstancedUniformsMesh(grassGeometry, this.grassMaterial, grassPoints.length);
+        for (let cpt = 0; cpt < grassPoints.length; cpt++) {
+            let position = grassPoints[cpt]
+            instancedGrassMesh.setUniformAt("pos", cpt, position);
+            instancedGrassMesh.setUniformAt("rot", cpt, Math.random() * Math.PI * 2);
         }
-
-        // tableau pour générer les InstancedChunks a partir de
-        this.tabInstancedMeshes = [];
-        // parcourt les chunks
-        for (let i = 0; i < nbChunks; i++) {
-            const chunk = chunks[i];
-            // créé une instanced mesh
-            const instancedGrassMesh = new InstancedUniformsMesh(grassGeometry, this.grassMaterial, chunk.length);
-            // parametre les uniforms de chaque instance dans cette mesh, pour placer ses brins et attribuer leurs orientation
-            for (let cpt = 0; cpt < chunk.length; cpt++) {
-                let position = new THREE.Vector3(chunk[cpt].x, chunk[cpt].y, chunk[cpt].z)
-                instancedGrassMesh.setUniformAt("pos", cpt, position);
-                instancedGrassMesh.setUniformAt("rot", cpt, Math.random() * Math.PI * 2);
-            }
-            // place le chunk dans le monde
-            const x = i % nbLines;
-            const z = Math.floor(i / nbLines);
-            instancedGrassMesh.position.z = -this.size * 0.4 + x * chunkSize;
-            instancedGrassMesh.position.x = -this.size * 0.4 + z * chunkSize;
-            // scale pour la detection du culling du chunk
-            instancedGrassMesh.scale.set(300, 50, 300);
-            // const box = new THREE.BoxHelper(instancedGrassMesh, 0xFF0000);
-            // scene.add(box);
-            // active le culling pour les instanced mesh
-            instancedGrassMesh.frustumCulled = false;
-            this.tabInstancedMeshes.push(instancedGrassMesh);
-        }
-
-        // ajoute chaque instanced mesh a la scene
-        for (let cpt = 0; cpt < this.tabInstancedMeshes.length; cpt++) {
-            scene.add(this.tabInstancedMeshes[cpt]);
-        }
+        scene.add(instancedGrassMesh);
 
         // fait pop les fleurs jaunes
         const flower = new Model("src/models/plantes/fleur_jaune.glb", 10);
@@ -332,10 +288,16 @@ class Terrain {
 
         // parcourt la heightMap a la recherche des points hors de l'eau
         const treePoints = [];
+        const heightLimit = 10;
+        const noise = new makeNoise2D("bruit pour seed le spawn des arbres");
         for (let cpt = 0; cpt < this.mesh.geometry.attributes.position.array.length; cpt += 3) {
-            if (this.mesh.geometry.attributes.position.array[cpt + 2] > 10)
-                if (Math.random() < 0.02)
-                    treePoints.push(new THREE.Vector3(this.mesh.geometry.attributes.position.array[cpt + 1], this.mesh.geometry.attributes.position.array[cpt + 2], this.mesh.geometry.attributes.position.array[cpt + 0]))
+            let y = this.mesh.geometry.attributes.position.array[cpt + 2];
+            if (y > heightLimit) {
+                let x = this.mesh.geometry.attributes.position.array[cpt + 1];
+                let z = this.mesh.geometry.attributes.position.array[cpt + 0];
+                if (map(noise(x * 10, z * 10), -1, 1, 0, 1) < 0.18)
+                    treePoints.push(new THREE.Vector3(x, y, z))
+            }
         }
 
         // charge le modele de l'arbre
@@ -420,32 +382,40 @@ class Terrain {
     }
 
     initPhysics(world) {
-        const heightFieldShape = new CANNON.Heightfield(this.collisionHeightMap, { elementSize: this.segmentSize });
+        // récupère une copie local de la heightMap pour la collision
+        let collisionHeightMap = this.collisionHeightMap;
+        // si le terrain est rond...
+        if (this.isRound) {
+            // remet la collision heightMap a 0
+            collisionHeightMap = Array(this.size / this.segmentSize).fill(0).map(val => Array(this.size / this.segmentSize).fill(0));
+            // pour chaque point de l'ancienne collisionHeightMap...
+            for (let i = 0; i < this.collisionHeightMap.length; i++) {
+                for (let j = 0; j < this.collisionHeightMap.length; j++) {
+                    // récupère la hauteur d'un poinr de l'ancienne collisionHeightMap
+                    let height = this.collisionHeightMap[i][j];
+                    // calcule la position de ce point si la collisionMap etait ronde
+                    let newPos = mapToUnitCircle(map(i, 0, this.collisionHeightMap.length, -1, 1), map(j, 0, this.collisionHeightMap.length, -1, 1));
+                    collisionHeightMap
+                    // applique la hauteur du point à sa position "arrondie" sur la nouvelle collisionHeightMap
+                    [Math.floor(map(newPos[0], -1, 1, 0, this.collisionHeightMap.length))]
+                    [Math.floor(map(newPos[1], -1, 1, 0, this.collisionHeightMap.length))] = height;
+                }
+            }
+        }
+        // génère la shepe pour la collision a partir de la collisionShape
+        const heightFieldShape = new CANNON.Heightfield(collisionHeightMap, { elementSize: this.segmentSize });
         const heightFieldBody = new CANNON.Body({ shape: heightFieldShape })
-        heightFieldBody.position.set(-this.size / 2, 0, -this.size / 2);
-        const planeMesh = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), new THREE.MeshBasicMaterial({ color: 0xFFFFFF }))
-        planeMesh.rotateY(Math.PI * 0)
-        planeMesh.rotateX(-Math.PI / 2)
-        // ligne pour alligner sur le positionnement des herbes
-        planeMesh.rotateZ(-Math.PI * 0.5)
-        heightFieldBody.quaternion.copy(planeMesh.quaternion);
+        // positionne la shape sur la mesh
+        heightFieldBody.position.set(-this.size / 2, -1, -this.size / 2);
+        // applique la meme rotation que la mesh
+        heightFieldBody.quaternion.copy(this.mesh.quaternion);
         world.addBody(heightFieldBody);
     }
 
     updateGrass(scene, cameraController) {
-        if (this.grassMaterial != undefined) {
+        if (this.grassMaterial != undefined)
+            // fait progresser le temps du shader de l'herbe pour l'animation
             this.grassMaterial.uniforms.time.value += 1;
-            // implemente un draw distance
-            this.tabInstancedMeshes.forEach((instancedMesh) => {
-                let distance = instancedMesh.position.distanceTo(cameraController.camera.position);
-                // si la distance entre l'instanced mesh et la camera est trop haute, n'affiche pas l'instanced mesh
-                if (distance > scene.getFogFar()) {
-                    instancedMesh.visible = false;
-                } else {
-                    instancedMesh.visible = true;
-                }
-            })
-        }
     }
 
 }

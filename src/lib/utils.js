@@ -18,7 +18,7 @@ function map(n, start1, stop1, start2, stop2, withinBounds) {
     }
 };
 
-function showNoise(heightMap) {
+function showNoise(heightMap, min = 0, max = 10) {
     const canvas = document.createElement("canvas");
     canvas.width = heightMap.length;
     canvas.height = heightMap.length;
@@ -30,12 +30,18 @@ function showNoise(heightMap) {
         for (let j = 0; j < canvas.height - 1; j++) {
             let a = heightMap[i][j];
             // c.fillStyle = "rgba(255, 255, 255, " + a + ")";
-            c.fillStyle = "rgba(255, 255, 255, " + map(a, 0, 10, 0, 1) + ")";
+            c.fillStyle = "rgba(255, 255, 255, " + map(a, min, max, 0, 1) + ")";
             c.fillRect(i, j, 1, 1);
         }
     }
 }
 
+/**
+ * retourne les coordonnées d'un point d'un carré de 1 de côté si ce carré était un cercle.
+ * @param {x} x un nombre entre -1 et 1 
+ * @param {*} y un nombre entre -1 et 1
+ * @returns 
+ */
 function mapToUnitCircle(x, y) {
     return [
         x * Math.sqrt(1 - ((y * y) / 2)),
