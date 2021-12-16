@@ -11,7 +11,10 @@ class CameraController {
         this.camera.layers.enableAll();
         this.direction = new THREE.Vector3(0, 0, 0);
         this.speed = 10;
+        this.setupEvents();
+    }
 
+    setupEvents() {
         // verrouille le curseur
         window.addEventListener("click", function () {
             document.querySelector("#canvas").requestPointerLock()
