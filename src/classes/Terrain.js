@@ -35,6 +35,16 @@ uniform float fogNear;
 uniform float fogFar;
 
 void main() {
+
+    // la couleur en fonction de la position
+    vec4 pixelColor = vec4(
+        0.75 + pos.y / 255.0,
+        0.5 + pos.z / 255.0,
+        1.0 + pos.x / 255.0,
+        1
+    );
+
+    // la texture en fonction de la hauteur
     if(pos.z > 6.0) {
         if(pos.z > 8.0) {
             vec4 color = texture(textureGrass, vec2(vUv.x * textureRepeatX, vUv.y * textureRepeatY));
@@ -46,6 +56,11 @@ void main() {
     } else {
         gl_FragColor = texture(textureDirt, vec2(vUv.x * textureRepeatX, vUv.y * textureRepeatY));
     }
+
+    // ajoute la colore la texture avec la couleur liée à la position
+    gl_FragColor  *= pixelColor;
+
+    // la couleur du fog
     #ifdef USE_FOG
           #ifdef USE_LOGDEPTHBUF_EXT
               float depth = gl_FragDepthEXT / gl_FragCoord.w;
@@ -172,6 +187,34 @@ class Terrain {
                                         0.0,                                0.0,                                0.0,                                1.0);
                         }
 
+                        // fonction de bruit pour générer du vent en fonction de la position en fonction du brin d'herbe
+                        vec3 permute(vec3 x) { return mod(((x*34.0)+1.0)*x, 289.0); }
+                        float snoise(vec2 v){
+                            const vec4 C = vec4(0.211324865405187, 0.366025403784439, -0.577350269189626, 0.024390243902439);
+                            vec2 i  = floor(v + dot(v, C.yy) );
+                            vec2 x0 = v - i + dot(i, C.xx);
+                            vec2 i1;
+                            i1 = (x0.x > x0.y) ? vec2(1.0, 0.0) : vec2(0.0, 1.0);
+                            vec4 x12 = x0.xyxy + C.xxzz;
+                            x12.xy -= i1;
+                            i = mod(i, 289.0);
+                            vec3 p = permute( permute( i.y + vec3(0.0, i1.y, 1.0 ))
+                            + i.x + vec3(0.0, i1.x, 1.0 ));
+                            vec3 m = max(0.5 - vec3(dot(x0,x0), dot(x12.xy,x12.xy),
+                                dot(x12.zw,x12.zw)), 0.0);
+                            m = m*m ;
+                            m = m*m ;
+                            vec3 x = 2.0 * fract(p * C.www) - 1.0;
+                            vec3 h = abs(x) - 0.5;
+                            vec3 ox = floor(x + 0.5);
+                            vec3 a0 = x - ox;
+                            m *= 1.79284291400159 - 0.85373472095314 * ( a0*a0 + h*h );
+                            vec3 g;
+                            g.x  = a0.x  * x0.x  + h.x  * x0.y;
+                            g.yz = a0.yz * x12.xz + h.yz * x12.yw;
+                            return 130.0 * dot(m, g);
+                        }
+
                         void main() {
                             vUv = uv;                      
                             // la matrix de transformation basée sur la position qu'on envoit en uniform
@@ -183,8 +226,9 @@ class Terrain {
                             );
 
                             vec3 customPos = position;
-                            customPos *= 6.0; // scale la taille des brins d'herbe
-                            customPos.x += sin(time * 0.006) * customPos.y * 0.4; // anim les brins d'herbes avec le temps
+                            customPos *= 5.5; // scale la taille des brins d'herbe
+                            // customPos.x += sin(time * 0.006) * customPos.y * 0.4; // anim les brins d'herbes avec le temps
+                            customPos.x += customPos.y * snoise(vec2(pos.x + time * 0.005, pos.z + time * 0.005)) * 0.1;
                             gl_Position = projectionMatrix 
                                             * viewMatrix
                                             * (transformation * rotationMatrix(vec3(0.0, 1.0, 0.0), rot))
@@ -372,13 +416,13 @@ class Terrain {
         scene.add(this.mesh);
 
         // fait le donut autour du terrain
-        if (this.isRound) {
-            const donutGeometry = new THREE.TorusGeometry(this.size / 2, 17, 32, 32);
-            const donutMaterial = new THREE.MeshBasicMaterial({ color: 0x6D4C41 });
-            const donutMesh = new THREE.Mesh(donutGeometry, donutMaterial);
-            donutMesh.rotateX(Math.PI / 2)
-            scene.add(donutMesh);
-        }
+        // if (this.isRound) {
+        //     const donutGeometry = new THREE.TorusGeometry(this.size / 2, 17, 32, 32);
+        //     const donutMaterial = new THREE.MeshBasicMaterial({ color: 0x6D4C41 });
+        //     const donutMesh = new THREE.Mesh(donutGeometry, donutMaterial);
+        //     donutMesh.rotateX(Math.PI / 2)
+        //     scene.add(donutMesh);
+        // }
     }
 
     initPhysics(world) {

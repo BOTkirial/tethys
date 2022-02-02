@@ -5,6 +5,7 @@ const vertexShader =
     `
 uniform float u_time;
 varying vec2 vUv;
+varying vec3 pos;
 
 vec3 permute(vec3 x) { return mod(((x*34.0)+1.0)*x, 289.0); }
 
@@ -38,12 +39,14 @@ void main() {
     vUv = uv;
     float y = snoise(vec2(position.x  + u_time, position.y) * 0.05);
     vec3 newPosition = vec3(position.x, position.y, y);
+    pos = newPosition;
     gl_Position = projectionMatrix * modelViewMatrix * vec4(newPosition, 1.); 
 }
 `
 
 const fragmentShader =
     `
+varying vec3 pos;
 uniform sampler2D text;
 uniform float u_time;
 uniform float textureRepeatX;
@@ -59,14 +62,19 @@ float getBrightness(vec3 pixel) {
 }
 
 void main() {
+
+    // fait progresser l'animation
     float offset = u_time * 0.02;
+    // rend les zones les plus claires moins transparentes
     vec4 pixelColor = texture(text, vec2(vUv.x * textureRepeatX + offset, vUv.y * textureRepeatY + offset));
     float brightness = getBrightness(pixelColor.xyz);
     if(brightness > 0.5) {
-        gl_FragColor = vec4(pixelColor.x, pixelColor.y, pixelColor.z, 0.65);
+        gl_FragColor = vec4(pixelColor.x, pixelColor.y, pixelColor.z, 0.6);
     } else {
-        gl_FragColor = vec4(pixelColor.x, pixelColor.y, pixelColor.z, 0.3);
+        gl_FragColor = vec4(pixelColor.x, pixelColor.y, pixelColor.z, 0.2);
     }
+
+    // gère le brouillard
     #ifdef USE_FOG
           #ifdef USE_LOGDEPTHBUF_EXT
               float depth = gl_FragDepthEXT / gl_FragCoord.w;
@@ -112,7 +120,7 @@ class Water extends THREE.Mesh {
             transparent: true
         });
 
-        this.geometry = new THREE.PlaneGeometry(this.width, this.depth, this.width / 8, this.depth / 8);
+        this.geometry = new THREE.PlaneGeometry(this.width, this.depth, this.width / 16, this.depth / 16);
 
         if (this.isRound) {
             // parcourt chaque point de l'eau pour la mettre en rond

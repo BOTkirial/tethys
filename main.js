@@ -3,7 +3,7 @@ import * as THREE from "three";
 import Renderer from "./src/classes/Renderer.js";
 import Scene from "./src/classes/Scene.js";
 import CameraController from "./src/classes/CameraController.js";
-// import PlayerController from "./src/classes/PlayerController";
+import PlayerController from "./src/classes/PlayerController";
 import Water from "./src/classes/Water.js";
 import Cloud from "./src/classes/Cloud.js";
 import Terrain from "./src/classes/Terrain.js";
@@ -24,8 +24,8 @@ scene.setFog();
 const sceneSnake = new Scene();
 sceneSnake.setBackgroundColor(0xFF0000);
 
-const cameraController = new CameraController(new THREE.Vector3(0, 20, 0));
-cameraController.init(scene);
+const playerController = new PlayerController(renderer);
+playerController.init(scene);
 
 // ==========LOGIQUE==========
 
@@ -74,15 +74,15 @@ scene.addMeshWithSpherePhysics(sphereMesh);
 
 function gameloop() {
 
-    cameraController.update();
+    playerController.update();
     tabClouds.forEach((cloud) => { cloud.update() })
     water.update();
-    terrain.updateGrass(scene, cameraController);
-    snake.update(renderer, cameraController);
-    portal.update(renderer, cameraController);
+    terrain.updateGrass(scene, playerController);
+    snake.update(renderer, playerController);
+    portal.update(renderer, playerController);
     scene.updatePhysics();
 
-    renderer.update(cameraController.scene, cameraController.camera);
+    renderer.update(playerController.scene, playerController.camera);
 
     window.requestAnimationFrame(gameloop);
 }

@@ -23,6 +23,13 @@ class Scene extends THREE.Scene {
         this.world.allowSleep = true;
         this.world.solver.iterations = 10;
         this.cannonDebugRenderer = new CannonDebugRenderer(this, this.world);
+
+        this.world.defaultContactMaterial.contactEquationStiffness = 1e9
+        this.world.defaultContactMaterial.contactEquationRelaxation = 4
+        const solver = new CANNON.GSSolver()
+        solver.iterations = 7
+        solver.tolerance = 0.1
+        this.world.solver = new CANNON.SplitSolver(solver)
     }
 
     setSky(renderer, url) {
@@ -81,9 +88,10 @@ class Scene extends THREE.Scene {
         // stocke une référence à la partie visuelle dans la partie physique pour synchroniser les deux lors de l'update
         body.mesh = mesh;
         // ajoute la partie visuelle a la scene
-        this.add(mesh)
+        this.add(mesh);
         // ajoute la partie physique au monde
-        this.world.addBody(body)
+        this.world.addBody(body);
+        return body;
     }
 
     addMeshWithSpherePhysics(mesh, type) {
@@ -103,6 +111,7 @@ class Scene extends THREE.Scene {
         // ajoute les deux parties a la scene et au monde
         this.add(mesh);
         this.world.addBody(body);
+        return body;
     }
 
     addMeshWithPhysics(mesh, type) {
@@ -118,6 +127,7 @@ class Scene extends THREE.Scene {
         // ajoute les deux parties a la scene et au monde
         this.world.addBody(body);
         this.add(mesh);
+        return body
     }
 
     updatePhysics() {
