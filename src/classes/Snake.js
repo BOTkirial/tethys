@@ -53,8 +53,8 @@ class SnakeHead extends THREE.Object3D {
         this.max = 6;
         this.initialized = false;
         this.snake = snake;
-        this.maxPathLength = 3500n;
-        this.pathIndex = 0n;
+        this.maxPathLength = 3500;
+        this.pathIndex = 0;
         this.path = [];
     }
 
@@ -115,7 +115,7 @@ class SnakeBody extends THREE.Object3D {
         this.nbSegments = nbSegments;
         this.initialized = false;
         this.snake = snake;
-        this.index = 0n;
+        this.index = 0;
     }
 
     init(scene) {
@@ -138,10 +138,10 @@ class SnakeBody extends THREE.Object3D {
     update() {
 
         // l'offset à appliquer pour aller chercher la position du segment
-        let offset = 60n;
+        let offset = 6;
         // l'offset à appliquer au premier segment après la tete
-        let firstSegmentOffset = 30n;
-        for (let cpt = 0n; cpt < this.children.length; cpt++) {
+        let firstSegmentOffset = 30;
+        for (let cpt = 0; cpt < this.children.length; cpt++) {
             let currentSegment = this.children[cpt];
             // si l'index pour ce segment existe
             if (this.index - firstSegmentOffset - (offset * cpt) > 0) {

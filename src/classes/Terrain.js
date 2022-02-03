@@ -351,6 +351,8 @@ class Terrain {
             treePoints.forEach((point) => {
                 // clone un arbre et le déplace sur le point
                 const newModel = model.clone();
+                // newModel.children[0].material = newMaterial;
+                // positionne l'arbre avec une rotation aléatoire et une position
                 newModel.rotateY(Math.random() * 2 * Math.PI)
                 newModel.position.copy(point);
                 newModel.position.y -= 8;
@@ -456,7 +458,7 @@ class Terrain {
         world.addBody(heightFieldBody);
     }
 
-    updateGrass(scene, cameraController) {
+    updateGrass() {
         if (this.grassMaterial != undefined)
             // fait progresser le temps du shader de l'herbe pour l'animation
             this.grassMaterial.uniforms.time.value += 1;

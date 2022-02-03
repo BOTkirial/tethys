@@ -18,7 +18,7 @@ class Scene extends THREE.Scene {
 
     enablePhysics() {
         this.world = new CANNON.World();
-        this.world.gravity.set(0, -9.82, 0);
+        this.world.gravity.set(0, -100, 0);
         this.world.broadphase = new CANNON.NaiveBroadphase();
         this.world.allowSleep = true;
         this.world.solver.iterations = 10;
@@ -94,14 +94,16 @@ class Scene extends THREE.Scene {
         return body;
     }
 
-    addMeshWithSpherePhysics(mesh, type) {
-        const t = type === "static" ? CANNON.Body.STATIC : CANNON.Body.DYNAMIC;
+    addMeshWithSpherePhysics(mesh, bodyOptions) {
         // calcule la boundingSphere pour la mesh
         mesh.geometry.computeBoundingSphere();
         const boundingSphere = mesh.geometry.boundingSphere;
         // créé la collision mesh sphere avec le radius de la bounding sphere
         const radius = boundingSphere.radius;
-        const body = new CANNON.Body({ mass: 1, type: t });
+        // parametre du physique du body
+        bodyOptions.type = bodyOptions.type === undefined ? 1 : bodyOptions.type;
+        bodyOptions.mass = bodyOptions.mass === undefined ? 1 : bodyOptions.mass;
+        const body = new CANNON.Body(bodyOptions);
         body.addShape(new CANNON.Sphere(radius));
         // positionne la sphere physique sur la sphere visuelle
         body.position.copy(mesh.position);

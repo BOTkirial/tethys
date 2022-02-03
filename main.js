@@ -10,6 +10,7 @@ import Terrain from "./src/classes/Terrain.js";
 import Snake from "./src/classes/Snake.js";
 import Portal from "./src/classes/PortalRound.js";
 import Model from "./src/classes/Model.js";
+import * as CANNON from "cannon-es";
 
 // ==========SETUP==========
 
@@ -69,7 +70,7 @@ const sphereGeometry = new THREE.SphereBufferGeometry(10);
 const sphereMaterial = new THREE.MeshBasicMaterial({ color: 0xFF0000 });
 const sphereMesh = new THREE.Mesh(sphereGeometry, sphereMaterial);
 sphereMesh.position.set(10, 200, 0);
-scene.addMeshWithSpherePhysics(sphereMesh);
+scene.addMeshWithSpherePhysics(sphereMesh, { mass: 1, type: CANNON.Body.DYNAMIC });
 
 
 function gameloop() {
@@ -77,7 +78,7 @@ function gameloop() {
     playerController.update();
     tabClouds.forEach((cloud) => { cloud.update() })
     water.update();
-    terrain.updateGrass(scene, playerController);
+    terrain.updateGrass();
     snake.update(renderer, playerController);
     portal.update(renderer, playerController);
     scene.updatePhysics();

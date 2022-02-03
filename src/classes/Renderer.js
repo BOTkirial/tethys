@@ -28,13 +28,13 @@ class Renderer extends THREE.WebGLRenderer {
         document.body.appendChild(this.drawCallsCountReference);
         document.body.appendChild(this.verticesCountReference);
         // compte les frames
-        this.frame = 0n;
+        this.frame = 0;
     }
 
     update(scene, camera, target = null) {
-        this.frame += 1n;
+        this.frame += 1;
 
-        if(this.frame % 10n === 0n) {
+        if(this.frame % 10 === 0) {
             this.geometriesCountReference.innerHTML = this.info.memory.geometries;
             this.drawCallsCountReference.innerHTML = this.info.render.calls;
             this.verticesCountReference.innerHTML = this.info.render.triangles;
