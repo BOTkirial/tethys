@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - 'main'
+      - 'master'
 
 # le worflow tourne sur la derniere version d'ubuntu
 jobs:
