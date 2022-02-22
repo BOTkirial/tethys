@@ -4,7 +4,7 @@ name: Build et publie sur registry Github
 on:
   workflow_dispatch:
   push:
-    branches: ['main']
+    branches: ['master']
 
 # permet d'envoyer sur le registry d'images de github
 env:
