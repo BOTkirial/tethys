@@ -8,6 +8,8 @@ on:
 env:
   REGISTRY: registry.cedricmarinot.fr
   IMAGE_NAME: ${{ github.repository }}
+  REGISTRY_PASS: ${{ secrets.REGISTRY_PWD }}
+  REGISTRY_USERNAME: ${{ secrets.REGISTRY_USER }}
 
 jobs:
   build-and-push-image:
@@ -16,8 +18,8 @@ jobs:
     steps:
     - uses: actions/checkout@v1
     - name: se connecte au custom registry
-      run: echo "Lbk31LQ5VwJ1" | docker login https://registry.cedricmarinot.fr -u ${{ secrets.REGISTRY_PASS }} --password-stdin
-    - name: build l'image
+      run: echo "$REGISTRY_PASS" | docker login https://registry.cedricmarinot.fr -u "$REGISTRY_USERNAME" --password-stdin
+    - name: build image
       run: docker build . --file Dockerfile -t ${{ env.REGISTRY }}/${{ github.repository }}
-    - name: push l'image
+    - name: push image
       run: docker push ${{ env.REGISTRY }}/${{ github.repository }}
