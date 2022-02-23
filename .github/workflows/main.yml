@@ -16,7 +16,7 @@ jobs:
     steps:
     - uses: actions/checkout@v1
     - name: se connecte au custom registry
-      run: echo "Lbk31LQ5VwJ1" | docker login https://registry.cedricmarinot.fr -u dockeruser --password-stdin
+      run: echo ${{ secrets.REGISTRY_PWD }} | docker login https://registry.cedricmarinot.fr -u ${{ secrets.REGISTRY_PASS }} --password-stdin
     - name: build l'image
       run: docker build . --file Dockerfile -t ${{ env.REGISTRY }}/${{ github.repository }}
     - name: push l'image
