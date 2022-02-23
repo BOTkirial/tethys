@@ -20,7 +20,7 @@ jobs:
     - id: string
       uses: ASzc/change-string-case-action@v2
       with:
-        string: "$IMAGE_NAME"
+        string: ${{ env.IMAGE_NAME }}
     - name: se connecte au custom registry
       run: echo "$REGISTRY_PASS" | docker login https://registry.cedricmarinot.fr -u "$REGISTRY_USERNAME" --password-stdin
     - name: build image
