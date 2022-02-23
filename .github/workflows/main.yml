@@ -7,7 +7,7 @@ on:
 
 env:
   REGISTRY: registry.cedricmarinot.fr
-  IMAGE_NAME: botkirial/tethys
+  IMAGE_NAME: ${{ github.repository }}
   REGISTRY_PASS: ${{ secrets.REGISTRY_PWD }}
   REGISTRY_USERNAME: ${{ secrets.REGISTRY_USER }}
 
@@ -17,9 +17,13 @@ jobs:
 
     steps:
     - uses: actions/checkout@v1
+    - id: string
+      uses: ASzc/change-string-case-action@v2
+      with:
+        string: "$IMAGE_NAME"
     - name: se connecte au custom registry
       run: echo "$REGISTRY_PASS" | docker login https://registry.cedricmarinot.fr -u "$REGISTRY_USERNAME" --password-stdin
     - name: build image
-      run: docker build . --file Dockerfile -t ${{ env.REGISTRY }}/${{ github.repository }}
+      run: docker build . --file Dockerfile -t ${{ env.REGISTRY }}/${{ steps.string.outputs.lowercase }}
     - name: push image
-      run: docker push ${{ env.REGISTRY }}/${{ github.repository }}
+      run: docker push ${{ env.REGISTRY }}/${{ steps.string.outputs.lowercase }}
